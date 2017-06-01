@@ -1,0 +1,22 @@
+{
+  "name": "smart-storage-box-generator",
+  "version": "1.0.0",
+  "description": "m = move to x y Use: m x y",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trolllabs/2017-smart-storage-box-generator.git"
+  },
+  "author": "Dag Frode Solberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trolllabs/2017-smart-storage-box-generator/issues"
+  },
+  "homepage": "https://github.com/trolllabs/2017-smart-storage-box-generator#readme",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
