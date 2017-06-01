@@ -33,20 +33,21 @@ function fastning(xfunc, yfunc,length, notches, thickness) {
     length *= direction;
     if (length < (size * 5)) {
         return xfunc(direction * length);
-
     } else {
         var sizeN = Math.floor(length / size);
         var reminder = length % size;
         if (sizeN % 2) {
-            //par
-            var x = Math.floor(reminder / 2) + size;
+            //odd
+            var x = reminder / 2;
             sizeN--;
             //odd
         } else {
+            var x = (reminder + size) / 2;
+            sizeN--;
+            sizeN--;
             // par
-            var x = size + Math.floor(reminder / 2);
         }
-        path += xfunc(direction * x);
+        path += xfunc(direction * (x + size));
         if (direction) {
             for (var i = 0; i < sizeN / 2; i++) {
                 path += yfunc(-1 * thickness);
@@ -62,7 +63,7 @@ function fastning(xfunc, yfunc,length, notches, thickness) {
                 path += xfunc(size * direction);
             }
         }
-        path += xfunc(x - size);
+        path += xfunc(direction * x);
     }
     return path;
 }
@@ -121,7 +122,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', function (req, res) {
-    console.log(req.query.height, req.query.width, req.query.depth, req.query.thickness);
+    //console.log(req.query.height, req.query.width, req.query.depth, req.query.thickness);
 
     res.send(
         generateBox(
