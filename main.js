@@ -1,53 +1,108 @@
-function path(x, y){
-    var svg = 'm '+x+' '+y+' ';
+function path(x, y) {
+    var svg = 'm ' + x + ' ' + y + ' ';
     return {
         addVerticalLine: function (length) {
-            svg += " v " + length;
+            svg += svgVerticalLine(length);
         },
         addHorizontalLine: function (length) {
-            svg += " h " + length;
+            svg += svgHorizontalLine(length);
         },
-        getPath: function(){
+        addSubPath: function (path) {
+            svg += path;
+        },
+        getPath: function () {
             return '<path d="' + svg + '" fill="transparent" stroke="black"/>';
         }
     }
 }
 
-function generateSide(height, width, depth, thickness, x, y) {
+function svgHorizontalLine(length) {
+    return " h " + length;
+}
+function svgVerticalLine(length) {
+    return " v " + length;
+}
+
+function fastningVertical(length, notches, thickness) {
+    return fastning(svgVerticalLine, svgHorizontalLine, length, notches, thickness);
+}
+function fastning(xfunc, yfunc,length, notches, thickness) {
+    var path = "";
+    var size = notches;
+    var direction = length > 0 ? 1 : -1;
+    length *= direction;
+    if (length < (size * 5)) {
+        return xfunc(direction * length);
+
+    } else {
+        var sizeN = Math.floor(length / size);
+        var reminder = length % size;
+        if (sizeN % 2) {
+            //par
+            var x = Math.floor(reminder / 2) + size;
+            sizeN--;
+            //odd
+        } else {
+            // par
+            var x = size + Math.floor(reminder / 2);
+        }
+        path += xfunc(direction * x);
+        if (direction) {
+            for (var i = 0; i < sizeN / 2; i++) {
+                path += yfunc(-1 * thickness);
+                path += xfunc(size * direction);
+                path += yfunc(thickness);
+                path += xfunc(size * direction);
+            }
+        } else {
+            for (var i = 0; i < sizeN / 2; i++) {
+                path += yfunc(thickness);
+                path += xfunc(size * direction);
+                path += yfunc(-1 * thickness);
+                path += xfunc(size * direction);
+            }
+        }
+        path += xfunc(x - size);
+    }
+    return path;
+}
+function fastningHorizontal(length, notches, thickness) {
+    return fastning(svgHorizontalLine, svgVerticalLine, length, notches, thickness);
+
+}
+
+function generateSide(height, width, depth, notches, thickness, x, y) {
     var side = path(x, y);
-    side.addHorizontalLine(depth); // B
-    side.addVerticalLine(height); // C
-    side.addHorizontalLine(-(depth-57)); // D
-    side.addVerticalLine(-25); // E
-    side.addHorizontalLine(-35); // F
-    side.addVerticalLine(25);  // G
-    side.addHorizontalLine(-22);  // H
-    side.addVerticalLine(-55); // I
-    side.addHorizontalLine(45); // J  Table holder
-    side.addVerticalLine(-50); // k  Table holder
-    side.addHorizontalLine(-45); // L  Table holder
-    side.addVerticalLine(-(height-105)); // A
+    var E = -25, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth, I = -height;
+    side.addHorizontalLine(A + B);
+    side.addSubPath(fastningVertical(C, notches, thickness));
+    side.addSubPath(fastningHorizontal(D, notches, thickness));
+    side.addVerticalLine(E);
+    side.addHorizontalLine(F);
+    side.addVerticalLine(G);
+    side.addHorizontalLine(H);
+    side.addVerticalLine(I);
     return side.getPath();
 }
 
 function generateFront(height, width, depth, thickness, x, y) {
-    return '<path d="m '+x+' '+y+' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
+    return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
 
 }
 
-function generateBottom (height, width, depth, thickness, x, y) {
-    return '<path d="m '+x+' '+y+' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
+function generateBottom(height, width, depth, thickness, x, y) {
+    return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
 
 }
 
 function generateBack(height, width, depth, thickness, x, y) {
-    return '<path d="m '+x+' '+y+' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
+    return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
 
 }
 
-function generateBox(height, width, depth, thickness){
+function generateBox(height, width, depth, notches, thickness) {
     var html = '<svg width="250mm" height="250mm" viewBox="0 0 250 250">';
-    html += generateSide(height, width, depth, thickness, 10, 10);
+    html += generateSide(height, width, depth, notches, thickness, 10, 10);
     //html += generateFront(height, width, depth, thickness, 100, 10);
     //html += generateBottom(height, width, depth, thickness, 10, 100);
     //html += generateBack(height, width, depth, thickness, 100, 100);
@@ -55,10 +110,10 @@ function generateBox(height, width, depth, thickness){
     return html;
 }
 
-height = 200;
+height = 150;
 width = 40;
-depth = 200;
-thickness = 0.5;
+depth = 150;
+thickness = 5;
 
 //document.getElementById("content").innerHTML = generateBox(height, width, depth, thickness);
 
@@ -66,7 +121,15 @@ const express = require('express');
 const app = express();
 
 app.get('/', function (req, res) {
-    res.send(generateBox(height, width, depth, thickness))
+    console.log(req.query.height, req.query.width, req.query.depth, req.query.thickness);
+
+    res.send(
+        generateBox(
+            parseInt(req.query.height),
+            parseInt(req.query.width),
+            parseInt(req.query.depth),
+            parseInt(req.query.notches),
+            parseInt(req.query.thickness)));
 });
 
 app.listen(3000, function () {
