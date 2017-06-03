@@ -77,7 +77,7 @@ function notchesHorizontal(length, notches, thickness) {
 
 function generateSide(height, width, depth, notches, thickness, x, y) {
     var side = path(x, y);
-    var E = -25, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth, I = -height;
+    var J = 50, E = -height + J, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth, I = -J -1*G;
     side.addHorizontalLine(A + B);
     side.addSubPath(notchesVertical(C, notches, thickness));
     side.addSubPath(notchesHorizontal(D, notches, thickness));
