@@ -23,10 +23,8 @@ function svgVerticalLine(length) {
     return " v " + length;
 }
 
-function fastningVertical(length, notches, thickness) {
-    return fastning(svgVerticalLine, svgHorizontalLine, length, notches, thickness);
-}
-function fastning(xfunc, yfunc,length, notches, thickness) {
+
+function notchGenerator(xfunc, yfunc,length, notches, thickness) {
     var path = "";
     var size = notches;
     var direction = length > 0 ? 1 : -1;
@@ -67,8 +65,13 @@ function fastning(xfunc, yfunc,length, notches, thickness) {
     }
     return path;
 }
-function fastningHorizontal(length, notches, thickness) {
-    return fastning(svgHorizontalLine, svgVerticalLine, length, notches, thickness);
+
+function notchesVertical(length, notches, thickness) {
+    return notchGenerator(svgVerticalLine, svgHorizontalLine, length, notches, thickness);
+}
+
+function notchesHorizontal(length, notches, thickness) {
+    return notchGenerator(svgHorizontalLine, svgVerticalLine, length, notches, thickness);
 
 }
 
@@ -76,8 +79,8 @@ function generateSide(height, width, depth, notches, thickness, x, y) {
     var side = path(x, y);
     var E = -25, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth, I = -height;
     side.addHorizontalLine(A + B);
-    side.addSubPath(fastningVertical(C, notches, thickness));
-    side.addSubPath(fastningHorizontal(D, notches, thickness));
+    side.addSubPath(notchesVertical(C, notches, thickness));
+    side.addSubPath(notchesHorizontal(D, notches, thickness));
     side.addVerticalLine(E);
     side.addHorizontalLine(F);
     side.addVerticalLine(G);
