@@ -110,28 +110,37 @@ function generateLeftSide(height, width, depth, notches, thickness, x, y) {
     return svg.getPath();
 }
 
-function generateFront(height, width, depth, thickness, x, y) {
-    return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
+function generateFront(height, width, depth, notches, thickness, x, y) {
 
+    var svg = path(x, y);
+    svg.addHorizontalLine(width);
+    svg.addSubPath(notchesVertical(height, notches, thickness, RIGHT));
+    svg.addSubPath(notchesHorizontal(-width, notches, thickness, DOWN));
+    svg.addSubPath(notchesVertical(-height, notches, thickness, LEFT));
+    return svg.getPath();
 }
 
-function generateBottom(height, width, depth, thickness, x, y) {
-    return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
-
+function generateBottom(height, width, depth, notches, thickness, x, y) {
+    var svg = path(x, y);
+    svg.addSubPath(notchesHorizontal(width, notches, thickness, DOWN));
+    svg.addSubPath(notchesVertical(depth, notches, thickness, RIGHT));
+    svg.addSubPath(notchesHorizontal(-width, notches, thickness, UP));
+    svg.addSubPath(notchesVertical(-depth, notches, thickness, LEFT));
+    return svg.getPath();
 }
 
-function generateBack(height, width, depth, thickness, x, y) {
+function generateBack(height, width, depth, notches, thickness, x, y) {
     return '<path d="m ' + x + ' ' + y + ' h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 10 v -5 h 10 v 5 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 10 h 5 v 10 h -5 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -10 v 5 h -10 v -5 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -10 h -5 v -10 h 5 v -5 " fill="transparent" stroke="black"/>'
 
 }
 
 function generateBox(height, width, depth, notches, thickness) {
-    var html = '<svg width="250mm" height="' + (2 * height + 40) + 'mm" viewBox="0 0 250 ' + (2 * height + 40) + '">';
+    var html = '<svg width="' + ((60 + depth) * 2 + width + 60) + 'mm" height="' + (3 * height + 60) + 'mm" viewBox="0 0 ' + ((60 + depth)*2 + width + 60) + ' ' + (3 * height + 60) + '">';
     html += generateRightSide(height, width, depth, notches, thickness, 10, 10);
-    html += generateLeftSide(height, width, depth, notches, thickness, 10, height + 20);
-    //html += generateFront(height, width, depth, thickness, 100, 10);
-    //html += generateBottom(height, width, depth, thickness, 10, 100);
-    //html += generateBack(height, width, depth, thickness, 100, 100);
+    html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 30, 10);
+    html += generateFront(height, width, depth, notches, thickness, 60 + depth + 20, 10);
+    html += generateBottom(height, width, depth, notches, thickness, 60 + depth + 20, height + 20);
+    //html += generateBack(height, width, depth, notches, thickness, 100, 100);
     html += '</svg>';
     return html;
 }
