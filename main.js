@@ -79,14 +79,14 @@ var LEFT = 1, RIGHT = -1, UP = 1, DOWN = -1;
 
 
 function generateRightSide(height, width, depth, notches, thickness, x, y) {
-    var J = 50, E = -height + J, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
+    var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
         I = -J + (-1) * G;
     var svg = path(x, y);
 
     svg.addHorizontalLine(A + B);
     svg.addSubPath(notchesVertical(C, notches, thickness, LEFT));
     svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
-    svg.addVerticalLine(E);
+    svg.addSubPath(notchesVertical(E, notches, thickness, RIGHT));
     svg.addHorizontalLine(F);
     svg.addVerticalLine(G);
     svg.addHorizontalLine(H);
@@ -95,7 +95,7 @@ function generateRightSide(height, width, depth, notches, thickness, x, y) {
 }
 
 function generateLeftSide(height, width, depth, notches, thickness, x, y) {
-    var J = 50, E = -height + J, F = -35, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
+    var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
         I = -J + (-1) * G;
     var svg = path(x + A + B, y);
 
@@ -103,7 +103,7 @@ function generateLeftSide(height, width, depth, notches, thickness, x, y) {
     svg.addHorizontalLine(H);
     svg.addVerticalLine(-G);
     svg.addHorizontalLine(F);
-    svg.addVerticalLine(-E);
+    svg.addSubPath(notchesVertical(-E, notches, thickness, LEFT));
     svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
     svg.addSubPath(notchesVertical(-C, notches, thickness, RIGHT));
     svg.addHorizontalLine(A + B);
@@ -115,26 +115,27 @@ function generateFront(height, width, depth, notches, thickness, x, y) {
     var svg = path(x, y);
     svg.addHorizontalLine(width);
     svg.addSubPath(notchesVertical(height, notches, thickness, RIGHT));
-    svg.addSubPath(notchesHorizontal(-width, notches, thickness, DOWN));
+    svg.addSubPath(notchesHorizontal(-width, notches, thickness, UP));
     svg.addSubPath(notchesVertical(-height, notches, thickness, LEFT));
     return svg.getPath();
 }
 
 function generateBottom(height, width, depth, notches, thickness, x, y) {
     var svg = path(x, y);
-    svg.addSubPath(notchesHorizontal(width, notches, thickness, DOWN));
-    svg.addSubPath(notchesVertical(depth, notches, thickness, RIGHT));
-    svg.addSubPath(notchesHorizontal(-width, notches, thickness, UP));
-    svg.addSubPath(notchesVertical(-depth, notches, thickness, LEFT));
+    svg.addSubPath(notchesHorizontal(width, notches, thickness, UP));
+    svg.addSubPath(notchesVertical(depth - 2*thickness, notches, thickness, RIGHT));
+    svg.addSubPath(notchesHorizontal(-width, notches, thickness, DOWN));
+    svg.addSubPath(notchesVertical(-depth +2*thickness, notches, thickness, LEFT));
     return svg.getPath();
 }
 
 function generateBack(height, width, depth, notches, thickness, x, y) {
+    var J = 50;
     var svg = path(x, y);
-    svg.addSubPath(notchesHorizontal(width, notches, thickness, UP));
-    svg.addSubPath(notchesVertical(height, notches, thickness, RIGHT));
+    svg.addSubPath(notchesHorizontal(width, notches, thickness, DOWN));
+    svg.addSubPath(notchesVertical(height -J, notches, thickness, RIGHT));
     svg.addHorizontalLine(-width);
-    svg.addSubPath(notchesVertical(-height, notches, thickness, LEFT));
+    svg.addSubPath(notchesVertical(-height + J, notches, thickness, LEFT));
     return svg.getPath();
 }
 
