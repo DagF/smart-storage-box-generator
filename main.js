@@ -140,6 +140,7 @@ function generateBack(height, width, depth, notches, thickness, x, y) {
 }
 
 function generateBox(height, width, depth, notches, thickness) {
+    width -= 2*thickness;
     var html = '<svg width="' + ((60 + depth) * 2 + width + 60) + 'mm" height="' + (2 * height + depth + 60) + 'mm" viewBox="0 0 ' + ((60 + depth) * 2 + width + 60) + ' ' + (2 * height + + depth + 60) + '">';
     html += generateRightSide(height, width, depth, notches, thickness, 10, 10);
     html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 30, 10);
