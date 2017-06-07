@@ -1,37 +1,14 @@
-# ssbg
+# Smart Storage box generator
 
-m = move to x y
-Use: m x y
+## Installation
+`sudo apt-get install npm`
 
-h = horisontal line
-use: h units
+`sudo npm install -g n`
 
-v = vertical line
-use: v units
+`sudo n latest `
 
-```
-<path d="
-    m 15 10
+`npm install`
 
-    h 10 v 5 h 10 v -5
-    h 10 v 5 h 10 v -5
-    h 10 v 5 h 10 v -5
-    h 10 v 5 h 5
+`sudo apt-get install inkscape`
 
-    v 10 h -5 v 10 h 5
-    v 10 h -5 v 10 h 5
-    v 10 h -5 v 10 h 5
-    v 10 h -5 v 5
-
-    h -10 v -5 h -10 v 5
-    h -10 v -5 h -10 v 5
-    h -10 v -5 h -10 v 5
-    h -10 v -5 h -5
-
-    v -10 h 5 v -10 h -5
-    v -10 h 5 v -10 h -5
-    v -10 h 5 v -10 h -5
-    v -10 h 5 v -5
-" fill="transparent" stroke="black"/> 
-```
-
+`sudo apt-get install pstoedit`

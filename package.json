@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/trolllabs/2017-smart-storage-box-generator#readme",
   "dependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "pug": "^2.0.0-rc.2"
   }
 }

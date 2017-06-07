@@ -1,4 +1,11 @@
-function path(x, y) {
+const pug = require('pug');
+const express = require('express');
+const app = express();
+var exec = require('child_process').exec;
+var fs = require('fs');
+const path = require('path');
+
+function svgPath(x, y) {
     var svg = 'm ' + x + ' ' + y + ' ';
     return {
         addVerticalLine: function (length) {
@@ -81,7 +88,7 @@ var LEFT = 1, RIGHT = -1, UP = 1, DOWN = -1;
 function generateRightSide(height, width, depth, notches, thickness, x, y) {
     var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
         I = -J + (-1) * G;
-    var svg = path(x, y);
+    var svg = svgPath(x, y);
 
     svg.addHorizontalLine(A + B);
     svg.addSubPath(notchesVertical(C, notches, thickness, LEFT));
@@ -97,7 +104,7 @@ function generateRightSide(height, width, depth, notches, thickness, x, y) {
 function generateLeftSide(height, width, depth, notches, thickness, x, y) {
     var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
         I = -J + (-1) * G;
-    var svg = path(x + A + B, y);
+    var svg = svgPath(x + A + B, y);
 
     svg.addVerticalLine(-I);
     svg.addHorizontalLine(H);
@@ -112,7 +119,7 @@ function generateLeftSide(height, width, depth, notches, thickness, x, y) {
 
 function generateFront(height, width, depth, notches, thickness, x, y) {
 
-    var svg = path(x, y);
+    var svg = svgPath(x, y);
     svg.addHorizontalLine(width);
     svg.addSubPath(notchesVertical(height, notches, thickness, RIGHT));
     svg.addSubPath(notchesHorizontal(-width, notches, thickness, UP));
@@ -121,27 +128,27 @@ function generateFront(height, width, depth, notches, thickness, x, y) {
 }
 
 function generateBottom(height, width, depth, notches, thickness, x, y) {
-    var svg = path(x, y);
+    var svg = svgPath(x, y);
     svg.addSubPath(notchesHorizontal(width, notches, thickness, UP));
-    svg.addSubPath(notchesVertical(depth - 2*thickness, notches, thickness, RIGHT));
+    svg.addSubPath(notchesVertical(depth - 2 * thickness, notches, thickness, RIGHT));
     svg.addSubPath(notchesHorizontal(-width, notches, thickness, DOWN));
-    svg.addSubPath(notchesVertical(-depth +2*thickness, notches, thickness, LEFT));
+    svg.addSubPath(notchesVertical(-depth + 2 * thickness, notches, thickness, LEFT));
     return svg.getPath();
 }
 
 function generateBack(height, width, depth, notches, thickness, x, y) {
     var J = 50;
-    var svg = path(x, y);
+    var svg = svgPath(x, y);
     svg.addSubPath(notchesHorizontal(width, notches, thickness, DOWN));
-    svg.addSubPath(notchesVertical(height -J, notches, thickness, RIGHT));
+    svg.addSubPath(notchesVertical(height - J, notches, thickness, RIGHT));
     svg.addHorizontalLine(-width);
     svg.addSubPath(notchesVertical(-height + J, notches, thickness, LEFT));
     return svg.getPath();
 }
 
 function generateBox(height, width, depth, notches, thickness) {
-    width -= 2*thickness;
-    var html = '<svg width="' + ((60 + depth) * 2 + width + 60) + 'mm" height="' + (2 * height + depth + 60) + 'mm" viewBox="0 0 ' + ((60 + depth) * 2 + width + 60) + ' ' + (2 * height + + depth + 60) + '">';
+    width -= 2 * thickness;
+    var html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + ((60 + depth) * 2 + width + 60) + 'mm" height="' + (2 * height + depth + 60) + 'mm" viewBox="0 0 ' + ((60 + depth) * 2 + width + 60) + ' ' + (2 * height + +depth + 60) + '">';
     html += generateRightSide(height, width, depth, notches, thickness, 10, 10);
     html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 30, 10);
     html += generateFront(height, width, depth, notches, thickness, 60 + depth + 20, 10);
@@ -158,12 +165,11 @@ thickness = 5;
 
 //document.getElementById("content").innerHTML = generateBox(height, width, depth, thickness);
 
-const express = require('express');
-const app = express();
 
-app.get('/', function (req, res) {
-    //console.log(req.query.height, req.query.width, req.query.depth, req.query.thickness);
+app.get('/box.svg', function (req, res) {
+    //console.log(req.query.height, req.query.width, req.query.depth,req.query.notches, req.query.thickness);
 
+    res.type('svg');
     res.send(
         generateBox(
             parseInt(req.query.height),
@@ -171,6 +177,69 @@ app.get('/', function (req, res) {
             parseInt(req.query.depth),
             parseInt(req.query.notches),
             parseInt(req.query.thickness)));
+
+
+});
+
+app.get('/', function (req, res) {
+    var box = generateBox(
+        parseInt(req.query.height),
+        parseInt(req.query.width),
+        parseInt(req.query.depth),
+        parseInt(req.query.notches),
+        parseInt(req.query.thickness));
+    var q = req.query;
+    var filename = 'H' + q.height + '_w' + q.width + '_d' + q.depth + '_n' + q.notches + '_t' + q.thickness;
+    if ('download_svg' in req.query) {
+        res.setHeader('Content-disposition', 'attachment; filename=' + filename + '.svg');
+        res.type('svg');
+        res.send(box);
+    }
+    else if ('download_dfx' in req.query) {
+
+        if (!fs.existsSync("./files")) {
+            fs.mkdirSync("./files");
+        }
+        if (!fs.existsSync("./files/" + filename + ".svg")) {
+            fs.writeFile("./files/" + filename + ".svg", box, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+                var cmd = 'inkscape -f ./files/'+filename+'.svg -E ./files/' + filename + '.esp';
+                exec(cmd, function (error, stdout, stderr) {
+                    // command output is in stdout
+                    console.log("Converting svg to esp");
+                    console.log(stdout);
+                    console.log(stderr);
+                    var cmd = "pstoedit -dt -f 'dxf:-polyaslines -mm' ./files/" + filename + ".esp ./files/" + filename + ".dxf &> /dev/null";
+
+                    exec(cmd, function (error, stdout, stderr) {
+                        // command output is in stdout
+                        console.log("Converting esp to dxf");
+                        console.log(stdout);
+                        console.log(stderr);
+                        var cmd = 'rm ./files/' + filename + ".esp";
+
+                        exec(cmd, function (error, stdout, stderr) {
+                            // command output is in stdout
+                            console.log("Removing esp file");
+                            console.log(stdout);
+                            console.log(stderr);
+                            res.download('./files/'+filename + '.dxf', filename + '.dxf');
+                        });
+                    });
+                });
+            });
+        } else {
+            res.download('./files/'+filename + '.dxf', filename + '.dxf');
+        }
+
+
+    } else {
+        var fn = pug.compileFile('index.pug', {});
+        var html = fn({q: req.query});
+        res.send(html);
+    }
 });
 
 app.listen(3001, function () {
