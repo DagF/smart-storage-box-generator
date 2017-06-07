@@ -182,13 +182,18 @@ app.get('/box.svg', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    var box = generateBox(
-        parseInt(req.query.height),
-        parseInt(req.query.width),
-        parseInt(req.query.depth),
-        parseInt(req.query.notches),
-        parseInt(req.query.thickness));
     var q = req.query;
+    q.height = q.height ? q.height : 200;
+    q.width = q.width ? q.width : 400;
+    q.depth = q.depth ? q.depth : 200;
+    q.notches = q.notches ? q.notches : 20;
+    q.thickness = q.thickness ? q.thickness : 5;
+    var box = generateBox(
+        parseInt(q.height),
+        parseInt(q.width),
+        parseInt(q.depth),
+        parseInt(q.notches),
+        parseInt(q.thickness));
     var filename = 'H' + q.height + '_w' + q.width + '_d' + q.depth + '_n' + q.notches + '_t' + q.thickness;
     if ('download_svg' in req.query) {
         res.setHeader('Content-disposition', 'attachment; filename=' + filename + '.svg');
@@ -205,7 +210,7 @@ app.get('/', function (req, res) {
                 if (err) {
                     return console.log(err);
                 }
-                var cmd = 'inkscape -f ./files/'+filename+'.svg -E ./files/' + filename + '.esp';
+                var cmd = 'inkscape -f ./files/' + filename + '.svg -E ./files/' + filename + '.esp';
                 exec(cmd, function (error, stdout, stderr) {
                     // command output is in stdout
                     console.log("Converting svg to esp");
@@ -225,13 +230,13 @@ app.get('/', function (req, res) {
                             console.log("Removing esp file");
                             console.log(stdout);
                             console.log(stderr);
-                            res.download('./files/'+filename + '.dxf', filename + '.dxf');
+                            res.download('./files/' + filename + '.dxf', filename + '.dxf');
                         });
                     });
                 });
             });
         } else {
-            res.download('./files/'+filename + '.dxf', filename + '.dxf');
+            res.download('./files/' + filename + '.dxf', filename + '.dxf');
         }
 
 
