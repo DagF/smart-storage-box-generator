@@ -5,6 +5,8 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 const path = require('path');
 
+var id = 1;
+
 function svgPath(x, y) {
     var svg = 'm ' + x + ' ' + y + ' ';
     return {
@@ -18,7 +20,8 @@ function svgPath(x, y) {
             svg += path;
         },
         getPath: function () {
-            return '<path d="' + svg + '" fill="transparent" stroke="black"/>';
+            id++;
+            return '<path id="path'+id+'" d="' + svg + '" fill="transparent" style="stroke:#000000;fill:none"/>';
         }
     }
 }
@@ -148,13 +151,23 @@ function generateBack(height, width, depth, notches, thickness, x, y) {
 
 function generateBox(height, width, depth, notches, thickness) {
     width -= 2 * thickness;
-    var html = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + ((60 + depth) * 2 + width + 60) + 'mm" height="' + (2 * height + depth + 60) + 'mm" viewBox="0 0 ' + ((60 + depth) * 2 + width + 60) + ' ' + (2 * height + +depth + 60) + '">';
+    var html = '<svg ' +
+        ' xmlns:dc="http://purl.org/dc/elements/1.1/"' +
+        ' xmlns:cc="http://creativecommons.org/ns#"' +
+        ' xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"' +
+        ' xmlns:svg="http://www.w3.org/2000/svg"' +
+        ' xmlns="http://www.w3.org/2000/svg" ' +
+        ' version="1.1" ' +
+        ' width="' + ((60 + depth) * 2 + width + 60) + 'mm" ' +
+        ' height="' + (2 * height + depth + 60) + 'mm" viewBox="0 0 ' + ((60 + depth) * 2 + width + 60) + ' ' + (2 * height + +depth + 60) + '">';
+    html += '<defs    id="defs3450" />        <metadata     id="metadata3453">         <rdf:RDF>    <cc:Work    rdf:about="">        <dc:format>image/svg+xml</dc:format>    <dc:type    rdf:resource="http://purl.org/dc/dcmitype/StillImage" />        <dc:title></dc:title>    </cc:Work>    </rdf:RDF>     </metadata>';
+    html += '<g id="g1" style="fill:none">';
     html += generateRightSide(height, width, depth, notches, thickness, 10, 10);
     html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 30, 10);
     html += generateFront(height, width, depth, notches, thickness, 60 + depth + 20, 10);
     html += generateBottom(height, width, depth, notches, thickness, 60 + depth + 20, height + 20);
     html += generateBack(height, width, depth, notches, thickness, 60 + depth + 20, depth + height + 30);
-    html += '</svg>';
+    html += '</g></svg>';
     return html;
 }
 
