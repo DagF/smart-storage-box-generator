@@ -89,23 +89,76 @@ var LEFT = 1, RIGHT = -1, UP = 1, DOWN = -1;
 
 
 function generateRightSide(height, width, depth, notches, thickness, x, y) {
-    var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
+    var J = 50, E = -height + J - thickness, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth + 2*thickness, C = height + thickness, D = -depth - 2 * thickness,
         I = -J + (-1) * G;
     var svg = svgPath(x, y);
 
     svg.addHorizontalLine(A + B);
-    svg.addSubPath(notchesVertical(C, notches, thickness, LEFT));
-    svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
-    svg.addSubPath(notchesVertical(E, notches, thickness, RIGHT));
+    svg.addVerticalLine(C);
+    svg.addHorizontalLine(D);
+    svg.addVerticalLine(E);
     svg.addHorizontalLine(F);
     svg.addVerticalLine(G);
     svg.addHorizontalLine(H);
     svg.addVerticalLine(I);
-    return svg.getPath();
+    return svg.getPath() + holeGenerator(x + A + B,y,C - thickness, notches, thickness, DOWN) + holeGenerator(x - A - 2 * notches - thickness,y - D - 3 * thickness,D - thickness, notches, thickness, LEFT) + holeGenerator(x - A - 3*thickness,y + I - G - notches,E - thickness, notches, thickness, RIGHT);
+}
+
+
+
+function holeGenerator(origiox, origioy, length, notches, thickness, direction) {
+    var path = "";
+    var size = notches;
+    var lineDirection = length > 0 ? 1 : -1;
+    length *= lineDirection;
+    if (length < (size * 5)) {
+        return xfunc(lineDirection * length);
+    } else {
+        var sizeN = Math.floor(length / size);
+        var reminder = length % size;
+        if (sizeN % 2) {
+            //odd
+            var x = reminder / 2;
+            sizeN--;
+            //odd
+        } else {
+            var x = (reminder + size) / 2;
+            sizeN--;
+            sizeN--;
+            // par
+        }
+       deltaX = lineDirection * (origiox - 2 * thickness);
+       deltaY = lineDirection * (origioy + size + x);
+        if (direction > 0) {
+            for (var i = 0; i < sizeN / 2; i++) {
+               path += rect(deltaX,origioy, notches, thickness);
+                //path += yfunc(-1 * thickness);
+                //path += xfunc(size * lineDirection);
+                //path += yfunc(thickness);
+                //path += xfunc(size * lineDirection);
+                deltaX += 2 * notches;
+            }
+        } else {
+            for (var i = 0; i < sizeN / 2; i++) {
+               path += rect(deltaX,deltaY,thickness, notches);
+                //path += yfunc(thickness);
+                //path += xfunc(size * lineDirection);
+                //path += yfunc(-1 * thickness);
+                //path += xfunc(size * lineDirection);
+                deltaY += 2 * notches;
+            }
+        }
+      //  path += xfunc(lineDirection * x);
+    }
+    return path;
+}
+
+function rect(x, y, width, height){
+  return '<rect x="'+x+'" y="'+y+'" width="'+width+'" height="'+height+'" fill="transparent" style="stroke:#000000;fill:none" />';
 }
 
 function generateLeftSide(height, width, depth, notches, thickness, x, y) {
-    var J = 50, E = -height + J, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth, C = height, D = -depth,
+    var J = 50, E = -height + J - thickness, F = -37, G = 25, H = -22, A = -1 * (H + F), B = depth + 2*thickness, C = height + thickness, D = -depth - 2 * thickness,
         I = -J + (-1) * G;
     var svg = svgPath(x + A + B, y);
 
@@ -113,9 +166,12 @@ function generateLeftSide(height, width, depth, notches, thickness, x, y) {
     svg.addHorizontalLine(H);
     svg.addVerticalLine(-G);
     svg.addHorizontalLine(F);
-    svg.addSubPath(notchesVertical(-E, notches, thickness, LEFT));
-    svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
-    svg.addSubPath(notchesVertical(-C, notches, thickness, RIGHT));
+    svg.addVerticalLine(-E);
+    svg.addHorizontalLine(D);
+    svg.addVerticalLine(-C);
+    //svg.addSubPath(notchesVertical(-E, notches, thickness, LEFT));
+    //svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
+    //svg.addSubPath(notchesVertical(-C, notches, thickness, RIGHT));
     svg.addHorizontalLine(A + B);
     return svg.getPath();
 }
@@ -163,10 +219,10 @@ function generateBox(height, width, depth, notches, thickness) {
     html += '<defs    id="defs3450" />        <metadata     id="metadata3453">         <rdf:RDF>    <cc:Work    rdf:about="">        <dc:format>image/svg+xml</dc:format>    <dc:type    rdf:resource="http://purl.org/dc/dcmitype/StillImage" />        <dc:title></dc:title>    </cc:Work>    </rdf:RDF>     </metadata>';
     html += '<g id="g1" style="fill:none">';
     html += generateRightSide(height, width, depth, notches, thickness, 10, 10);
-    html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 30, 10);
-    html += generateFront(height, width, depth, notches, thickness, 60 + depth + 20, 10);
-    html += generateBottom(height, width, depth, notches, thickness, 60 + depth + 20, height + 20);
-    html += generateBack(height, width, depth, notches, thickness, 60 + depth + 20, depth + height + 30);
+    html += generateLeftSide(height, width, depth, notches, thickness, 60 + depth + width + 40, 10);
+    html += generateFront(height, width, depth, notches, thickness, 60 + depth + 30, 10);
+    html += generateBottom(height, width, depth, notches, thickness, 60 + depth + 30, height + 25);
+    html += generateBack(height, width, depth, notches, thickness, 60 + depth + 30, depth + height + 30);
     html += '</g></svg>';
     return html;
 }
@@ -260,6 +316,8 @@ app.get('/', function (req, res) {
     }
 });
 
-app.listen(3001, function () {
-    console.log('Example app listening on port 3000!')
+var port = 3000;
+
+app.listen(port, function () {
+    console.log('Example app listening on port ' + port);
 });
