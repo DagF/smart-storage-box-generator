@@ -101,7 +101,7 @@ function generateRightSide(height, width, depth, notches, thickness, x, y) {
     svg.addVerticalLine(G);
     svg.addHorizontalLine(H);
     svg.addVerticalLine(I);
-    return svg.getPath() + holeGenerator(x + A + B,y,C - thickness, notches, thickness, DOWN) + holeGenerator(x - A - 2 * notches - thickness,y - D - 3 * thickness,D - thickness, notches, thickness, LEFT) + holeGenerator(x - A - 3*thickness,y + I - G - notches,E - thickness, notches, thickness, RIGHT);
+    return svg.getPath() + holeGenerator( x + A + B - 2* thickness,y,C, notches, thickness, DOWN) + holeGenerator(x + A,y - D - 3 * thickness,D, notches, thickness, LEFT) + holeGenerator(x + A + thickness,y - I - G,E - thickness, notches, thickness, RIGHT);
 }
 
 
@@ -127,8 +127,8 @@ function holeGenerator(origiox, origioy, length, notches, thickness, direction) 
             sizeN--;
             // par
         }
-       deltaX = lineDirection * (origiox - 2 * thickness);
-       deltaY = lineDirection * (origioy + size + x);
+       deltaX = origiox + size + x;
+       deltaY = origioy + size + x - thickness / 2;
         if (direction > 0) {
             for (var i = 0; i < sizeN / 2; i++) {
                path += rect(deltaX,origioy, notches, thickness);
@@ -140,7 +140,7 @@ function holeGenerator(origiox, origioy, length, notches, thickness, direction) 
             }
         } else {
             for (var i = 0; i < sizeN / 2; i++) {
-               path += rect(deltaX,deltaY,thickness, notches);
+               path += rect(origiox,deltaY,thickness, notches);
                 //path += yfunc(thickness);
                 //path += xfunc(size * lineDirection);
                 //path += yfunc(-1 * thickness);
@@ -173,7 +173,7 @@ function generateLeftSide(height, width, depth, notches, thickness, x, y) {
     //svg.addSubPath(notchesHorizontal(D, notches, thickness, UP));
     //svg.addSubPath(notchesVertical(-C, notches, thickness, RIGHT));
     svg.addHorizontalLine(A + B);
-    return svg.getPath();
+    return svg.getPath() + holeGenerator( x + thickness,y,C, notches, thickness, DOWN) + holeGenerator(x,y - D - 3 * thickness,D, notches, thickness, LEFT) + holeGenerator(x + B - 2*thickness,y - I - G,E - thickness, notches, thickness, RIGHT);
 }
 
 function generateFront(height, width, depth, notches, thickness, x, y) {
